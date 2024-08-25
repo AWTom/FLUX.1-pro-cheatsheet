@@ -68,7 +68,7 @@ img {
 			table.className = "table";
 			table.innerHTML = values.map((v, i) => {
 				const fileName = v.replaceAll(" ", "").replaceAll(".", "");
-				const imgTags = ["0", "1", "2", "3"].map(i => `<img src="/i/${fileName}${i}.webp">`).join("");
+				const imgTags = ["0", "1", "2", "3"].map(i => `<img src="https://strea.ly/cdn-cgi/image/w=128,h=128/${fileName}${i}.webp">`).join("");
 				return `<div id="${i}" class="row"><div class="row-info">${v}</div>${imgTags}</div>`
 			}).join("");
 
@@ -77,8 +77,15 @@ img {
 					const row = event.target.closest('.row');
 
 					if (row) {
+						// Maximize row
 						row.classList.add('row-expanded');
-						// TODO: load larger image
+
+						// Add larger images
+						Array.from(row.children).forEach(e => {
+							if (e.tagName === "img") {
+								e.setAttribute("src", e.getAttribute("src").replace("cdn-cgi/image/w=128,h=128/", ""));
+							}
+						}
 					}
 				}
 			});
