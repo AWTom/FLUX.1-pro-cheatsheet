@@ -13,6 +13,9 @@ img {
 	border-radius: 0.5vw;
 	transition: width 0.25s ease-out, height 0.25s ease-out;
 }
+img.loading {
+	cursor: wait;
+}
 .table {
 	display: flex;
 	justify-content: center;
@@ -20,6 +23,10 @@ img {
 }
 .row {
 	display: flex;
+	cursor: e-resize;
+}
+.row.row-expanded {
+	cursor: auto;
 }
 .row > div.row-info {
 	flex: 0 0 10vw;
@@ -56,7 +63,8 @@ img {
 				return `<div id="${i}" class="row"><div class="row-info">${v}</div>${imgTags}</div>`
 			}).join("");
 
-			table.addEventListener('click', function(event) {
+			table.addEventListener('click', event => {
+				// TODO make this more specific so it doesn't trigger on the blank area of the row
 				if (event.target !== table && table.contains(event.target)) {
 					const row = event.target.closest('.row');
 
@@ -65,15 +73,23 @@ img {
 						row.classList.add('row-expanded');
 
 						// Add larger images
-						// TODO: display loading indicator
 						Array.from(row.children).forEach(e => {
 							if (e.tagName === "IMG") {
+								e.classList.add("loading");
 								e.setAttribute("src", e.getAttribute("src").replace("cdn-cgi/image/w=128,h=128/", ""));
 							}
 						});
 					}
 				}
 			});
+
+			// TODO check if this has a performance penalty on page load
+			table.addEventListener("load", event => {
+				const e = event.target;
+				if (e.tagName === "IMG" && e.classList.contains("loading")) {
+					e.classList.remove("loading");
+				}
+			}, true);
 
 			document.body.appendChild(table);
 
