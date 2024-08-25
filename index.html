@@ -69,7 +69,18 @@ img {
 				const fileName = v.replaceAll(" ", "").replaceAll(".", "");
 				const imgTags = ["0", "1", "2", "3"].map(i => `<img src="/i/${fileName}${i}.webp">`);
 				return `<div id="${i}" class="row"><div class="row-info">${v}</div>${imgTags}</div>`
-			});
+			}).join("");
+
+			table.addEventListener('click', function(event) {
+				if (event.target !== table && table.contains(event.target) {
+					const row = event.target.closest('.row');
+
+					if (row) {
+						row.classList.add('.row-expanded');
+						// TODO: load larger image
+					}
+				}
+			}
 
 			//let content = document.createTextNode(csv);
 
@@ -78,6 +89,7 @@ img {
 			//});
 			//document.body.appendChild(content);
 			document.body.appendChild(table);
+			
 			// Get csv and create a table and a row for each element
 			// Detect scroll and load images
 			// Detect click and expand
