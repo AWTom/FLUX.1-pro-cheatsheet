@@ -1,4 +1,4 @@
-name = "cheatsheet"
+name = "flux-1-pro-cheatsheet"
 pages_build_output_dir = "./"
 
 [[r2_buckets]]
