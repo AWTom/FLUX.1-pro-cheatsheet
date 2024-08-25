@@ -1,3 +1,5 @@
+name = "cheatsheet"
+
 [[r2_buckets]]
 binding = "I"
 bucket_name = "cheatsheet-images"
