@@ -68,7 +68,7 @@ img {
 			table.innerHTML = values.map((v, i) => {
 				const fileName = v.replaceAll(" ", "").replaceAll(".", "");
 				const imgTags = ["0", "1", "2", "3"].map(i => `<img src="/i/${fileName}${i}.webp">`);
-				return `<div id="${i}" class="row"><div class="row-info">${v}</div>${imgTags}</div>`)
+				return `<div id="${i}" class="row"><div class="row-info">${v}</div>${imgTags}</div>`
 			});
 
 			//let content = document.createTextNode(csv);
