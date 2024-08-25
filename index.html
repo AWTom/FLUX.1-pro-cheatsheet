@@ -11,6 +11,7 @@ img {
 	width: 10vw;
 	height: 10vw;
 	border-radius: 0.5vw;
+	margin: 0.5vw;
 	transition: width 0.25s ease-out, height 0.25s ease-out;
 }
 img.loading {
@@ -27,13 +28,23 @@ img.loading {
 }
 .row.row-expanded {
 	cursor: auto;
+	flex-wrap: wrap;
 }
 .row > div.row-info {
-	flex: 0 0 10vw;
+	flex: 0 0 27vw;
+	margin-inline: 0.5vw;
+	margin-block: auto;
+	text-align: end;
+	text-wrap: balance;
 }
 .row.row-expanded > img {
-	width: 22.5vw;
-	height: 22.5vw;
+	width: 24vw;
+	height: 24vw;
+}
+.row.row-expanded > div.row-info {
+	flex: 0 0 99vw;
+	margin-block-start: 1vw;
+	text-align: center;
 }
 @media (prefers-color-scheme: dark) {
 	body {
