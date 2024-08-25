@@ -5,6 +5,8 @@
 body {
 	/*background-color: blue;*/
 	margin: 0;
+	font-family: sans-serif;
+	color-scheme: light dark;
 }
 h1 {
 } 
@@ -26,18 +28,17 @@ img {
 }
 .row {
 	display: flex;
-	width: 30%;
+	width: 30vw;
 	flex: 1 1 0;
 }
 .row > div.row-info {
 	flex: 0 0 10vw;
-	/*width: 20%;*/
 }
 .row > img {
 	flex: 1 1 0;
 }
 .row.row-expanded > img {
-	flex-grow: 1;
+	flex: 1 0 20vw;
 }
 @media (prefers-color-scheme: dark) {
 	body {
@@ -67,7 +68,7 @@ img {
 			table.className = "table";
 			table.innerHTML = values.map((v, i) => {
 				const fileName = v.replaceAll(" ", "").replaceAll(".", "");
-				const imgTags = ["0", "1", "2", "3"].map(i => `<img src="/i/${fileName}${i}.webp">`);
+				const imgTags = ["0", "1", "2", "3"].map(i => `<img src="/i/${fileName}${i}.webp">`).join("");
 				return `<div id="${i}" class="row"><div class="row-info">${v}</div>${imgTags}</div>`
 			}).join("");
 
@@ -76,7 +77,7 @@ img {
 					const row = event.target.closest('.row');
 
 					if (row) {
-						row.classList.add('.row-expanded');
+						row.classList.add('row-expanded');
 						// TODO: load larger image
 					}
 				}
