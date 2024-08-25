@@ -71,7 +71,7 @@ img {
 				return `<div id="${i}" class="row"><div class="row-info">${v}</div>${imgTags}</div>`
 			}).join("");
 
-			table.addEventListener('click', function(event)) {
+			table.addEventListener('click', function(event) {
 				if (event.target !== table && table.contains(event.target)) {
 					const row = event.target.closest('.row');
 
@@ -80,7 +80,7 @@ img {
 						// TODO: load larger image
 					}
 				}
-			}
+			});
 
 			//let content = document.createTextNode(csv);
 
