@@ -4,7 +4,7 @@ A collection of what FLUX.1 [pro] generates when prompted with "Style of [artist
 
 ## Description
 
-An in-depth paragraph about your project and overview of use.
+Released on August 1st, 2024, FLUX.1 [pro] is the top-performing of three text-to-image models released by <a href="https://blackforestlabs.ai/">Black Forest Labs</a> in their debut announcement. It features a leap forward from previous models in prompt adherence and image composition.
 
 ## Authors
 
