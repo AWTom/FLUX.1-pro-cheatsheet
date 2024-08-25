@@ -1,4 +1,5 @@
 name = "cheatsheet"
+pages_build_output_dir = "./public"
 
 [[r2_buckets]]
 binding = "I"
