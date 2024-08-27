@@ -25,6 +25,7 @@ body {
 .row {
 	display: flex;
 	justify-content: center;
+	transition: font-size 0s 0.25s;
 }
 .row-info {
 	left: 0;
@@ -35,12 +36,11 @@ body {
 	text-wrap: balance;
 	position: absolute;
 	visibility: visible;
-	transition: visibility 0s .25s allow-discrete;
+	transition: visibility 0s 0.25s allow-discrete;
 }
 .row-toolbar {
 	width: 100vw;
-	margin-block-start: -0.6lh;
-	font-size: 1.25em;
+	margin-block-start: calc(-0.5vw - 1em);
 	text-align: center;
 	position: absolute;
 	/* I don't want every title to be a gradient, but -webkit-text-fill-color is not transitionable */
@@ -48,7 +48,7 @@ body {
 	background: linear-gradient(0deg, var(--color) 0%, var(--color) calc(var(--v) - 30%), transparent var(--v));
 	background-clip: text;
 	-webkit-text-fill-color: transparent;
-	transition: margin .25s ease-out, --v .25s ease-out;
+	transition: margin 0.25s ease-out, --v 0.25s ease-out;
 }
 .row-icons {
 	height: 0.9em;
@@ -62,7 +62,7 @@ body {
 	stroke: white;
 	display: inline-block;
 	background: linear-gradient(0deg, var(--color) 0%, var(--color) calc(var(--v) - 30%), transparent var(--v));
-	transition: --v .25s ease-out;
+	transition: --v 0.25s ease-out;
 }
 .row-icons i.fluxproart {
 	mask: url(fluxproart.svg);
@@ -89,6 +89,8 @@ body {
 	cursor: auto;
 	flex-wrap: wrap;
 	justify-content: center;
+	font-size: 1.25em;
+	transition: font-size 0s 0s;
 }
 @property --v {
 	syntax: '<percentage>';
@@ -109,7 +111,7 @@ body {
 }
 .row.row-expanded .row-toolbar {
 	--v: 130%;
-	margin-block-start: calc(0.4lh + 0.8vw);
+	margin-block-start: 2vw;
 }
 .row.row-expanded .row-icons {
 	visibility: visible;
@@ -122,7 +124,7 @@ body {
 	width: 24vw;
 	height: 24vw;
 	position: relative;
-	margin-block-start: calc(1lh + 3vw);
+	margin-block-start: calc(1em + 3vw);
 }
 		</style>
 	</head>
