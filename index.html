@@ -20,48 +20,66 @@ body {
 }
 .table {
 	display: flex;
-	justify-content: center;
 	flex-direction: column;
 }
 .row {
 	display: flex;
+	justify-content: center;
 }
 .row-info {
-	flex: 0 0 27vw;
-	margin-inline: 0.5vw;
+	left: 0;
+	height: 11vw;
+	width: 27vw;
 	align-content: center;
 	text-align: end;
 	text-wrap: balance;
-	position: relative;
-	transition: margin 0.25s ease-out, --v 0.25s ease-out;
+	position: absolute;
+	visibility: visible;
+	transition: visibility 0s .25s allow-discrete;
+}
+.row-toolbar {
+	width: 100vw;
+	margin-block-start: -0.6lh;
+	font-size: 1.25em;
+	text-align: center;
+	position: absolute;
+	/* I don't want every title to be a gradient, but -webkit-text-fill-color is not transitionable */
+	--v: 0%;
+	background: linear-gradient(0deg, var(--color) 0%, var(--color) calc(var(--v) - 30%), transparent var(--v));
+	background-clip: text;
+	-webkit-text-fill-color: transparent;
+	transition: margin .25s ease-out, --v .25s ease-out;
 }
 .row-icons {
 	height: 0.9em;
 	position: absolute;
+	visibility: hidden;
+	transition: visibility 0s 0.25s allow-discrete;
 }
 .row-icons i {
 	width: 0.9em;
 	height: 0.9em;
-	margin-left: 0.5em;
-	opacity: 0;
-	transition: opacity 0.05s linear;
 	stroke: white;
 	display: inline-block;
-	/*background-color: var(--color);*/
-	background: linear-gradient(0deg, var(--color) 0%, var(--color) calc(var(--v) - 15%), transparent var(--v));
+	background: linear-gradient(0deg, var(--color) 0%, var(--color) calc(var(--v) - 30%), transparent var(--v));
+	transition: --v .25s ease-out;
 }
 .row-icons i.fluxproart {
 	mask: url(fluxproart.svg);
 }
 .row-icons i.minimize {
 	mask: url(minimize.svg);
+	cursor: pointer;
+}
+.row-icons > * {
+	margin-inline-start: 0.5em;
 }
 .row > img {
 	width: 10vw;
 	height: 10vw;
 	border-radius: 0.5vw;
 	margin: 0.5vw;
-	transition: width 0.25s ease-out, height 0.25s ease-out;
+	transition: width 0.25s ease-out, height 0.25s ease-out, margin 0.25s ease-out;
 	cursor: zoom-in;
 }
 .row > img.loading {
@@ -71,33 +89,40 @@ body {
 	cursor: auto;
 	flex-wrap: wrap;
 	justify-content: center;
-	font-size: 1.25em;
+}
+@property --v {
+	syntax: '<percentage>';
+	inherits: true;
+	initial-value: 130%;
+}
+.row.row-expanded .row-info {
+	visibility: hidden;
+	transition: visibility 0s 0s allow-discrete;
+	/*width: 100vw;
+	height: calc(2lh - 1em);
+	margin-block-start: 0.5em;
+	padding-block-start: 0;*/
+	/*--v: 130%;*/
+	/*text-align: center;
+	transition: width 0s 0s, height 0s 0s, padding 0s 0s, text-align 0s 0s allow-discrete;
+	animation: fadein .25s ease-out;*/
+}
+.row.row-expanded .row-toolbar {
+	--v: 130%;
+	margin-block-start: calc(0.4lh + 0.8vw);
+}
+.row.row-expanded .row-icons {
+	visibility: visible;
+	transition: visibility 0s 0s allow-discrete;
+}
+.row.row-expanded:not(:hover) .row-icons i {
+	--v: 0%;
 }
 .row.row-expanded img {
 	width: 24vw;
 	height: 24vw;
 	position: relative;
-	top: -1lh;
-	margin-block-end: calc(0.5vw - 1lh);
-}
-@property --v {
-	syntax: '<percentage>';
-	inherits: true;
-	initial-value: 0%;
-}
-.row.row-expanded .row-info {
-	--v: 100%;
-	flex: 0 0 100vw;
-	text-align: center;
-	/*height: 0;*/
-	margin-block-start: 1.5lh;
-	bottom: 1lh;
-	background: linear-gradient(0deg, var(--color) 0%, var(--color) var(--v), transparent var(--v));
-	background-clip: text;
-	-webkit-text-fill-color: transparent;
-}
-.row.row-expanded .row-icons i {
-	opacity: 1;
+	margin-block-start: calc(1lh + 3vw);
 }
 		</style>
 	</head>
@@ -134,7 +159,7 @@ body {
 					const [name, link] = l.split(",");
 					const fileName = "Styleof" + name.replaceAll(" ", "").replaceAll(".", "");
 					const imgTags = ["0", "1", "2", "3"].map(i => `<img src="https://strea.ly/cdn-cgi/image/w=128,h=128/${fileName}${i}.webp">`).join("");
-					return `<div id="${i}" class="row"><div class="row-info">Style of ${name}<span class="row-icons"><a href="https://fluxpro.art/prompts/${link}" target="_blank" rel="noopener noreferrer"><i class="fluxproart"></i></a><i class="minimize"></i></span></div>${imgTags}</div>`
+					return `<div id="${i}" class="row"><div class="row-info">Style of ${name}</div><div class="row-toolbar">Style of ${name}<span class="row-icons"><a href="https://fluxpro.art/prompts/${link}" target="_blank" rel="noopener noreferrer"><i class="fluxproart"></i></a><i class="minimize"></i></span></div>${imgTags}</div>`
 				}).join("");
 
 				// Click on unexpanded row: expand row
@@ -146,6 +171,7 @@ body {
 					if (event.target !== table && table.contains(event.target)) {
 						const row = event.target.closest(".row");
 						const tag = event.target.tagName;
+						const imgOptimizerSnippet = "cdn-cgi/image/w=128,h=128/";
 
 						if (row) {
 							if (!row.classList.contains("row-expanded") && tag === "IMG") {
@@ -154,9 +180,9 @@ body {
 
 								// Add larger images
 								Array.from(row.children).forEach(e => {
-									if (e.tagName === "IMG") {
+									if (e.tagName === "IMG" && e.getAttribute("src").includes(imgOptimizerSnippet)) {
 										e.classList.add("loading");
-										e.setAttribute("src", e.getAttribute("src").replace("cdn-cgi/image/w=128,h=128/", ""));
+										e.setAttribute("src", e.getAttribute("src").replace(imgOptimizerSnippet, ""));
 									}
 								});
 							} else if (tag === "IMG") {
