@@ -78,6 +78,9 @@ body {
 .row-icons i.fluxproart {
 	mask: url(fluxproart.svg);
 }
+.row-icons i.search {
+	mask: url(search.svg);
+}
 .row-icons i.minimize {
 	mask: url(minimize.svg);
 }
@@ -167,7 +170,7 @@ body {
 					const [name, link] = l.split(",");
 					const fileName = "Styleof" + name.replaceAll(" ", "").replaceAll(".", "");
 					const imgTags = ["0", "1", "2", "3"].map(i => `<img src="https://strea.ly/cdn-cgi/image/w=128,h=128/${fileName}${i}.webp">`).join("");
-					return `<div id="${i}" class="row"><div class="row-info">Style of ${name}</div><div class="row-toolbar">Style of ${name}<span class="row-icons"><i class="copy"><a href="https://fluxpro.art/prompts/${link}" target="_blank" rel="noopener noreferrer"></i><i class="fluxproart"></i></a><i class="minimize"></i></span></div>${imgTags}</div>`
+					return `<div id="${i}" class="row"><div class="row-info">Style of ${name}</div><div class="row-toolbar">Style of ${name}<span class="row-icons"><i class="copy" title="Copy to clipboard"><a href="https://fluxpro.art/prompts/${link}" target="_blank" rel="noopener noreferrer" title="See original generation on fluxpro.art"></i><i class="fluxproart"></i></a><a href="https://fluxpro.art/prompts?q=${name}" target="_blank" rel="noopener noreferrer" title="Search for images generated using ${name} on fluxpro.art"><i class="search"></i></a><i class="minimize"></i></span></div>${imgTags}</div>`
 				}).join("");
 
 				let checkedId = -1;
