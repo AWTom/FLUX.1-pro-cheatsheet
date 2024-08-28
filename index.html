@@ -110,14 +110,6 @@ body {
 .row.row-expanded .row-info {
 	visibility: hidden;
 	transition: visibility 0s 0s allow-discrete;
-	/*width: 100vw;
-	height: calc(2lh - 1em);
-	margin-block-start: 0.5em;
-	padding-block-start: 0;*/
-	/*--v: 130%;*/
-	/*text-align: center;
-	transition: width 0s 0s, height 0s 0s, padding 0s 0s, text-align 0s 0s allow-discrete;
-	animation: fadein .25s ease-out;*/
 }
 .row.row-expanded .row-toolbar {
 	--v: 130%;
@@ -140,9 +132,9 @@ body {
 	</head>
 	<body>
 		<div class="blurb">
-			<h1>FLUX.1-pro-cheatsheet</h1>
-			<p>A collection of what FLUX.1 [pro] generates when prompted with "Style of [artist name]" for <span id="numArtists" /> artists. Huge thanks to <a href="https://fluxpro.art/users/clznf8wx700q98csskgsrhzc9">fluxpro.art</a> for generation resources, and <a href="https://github.com/SupaGruen/StableDiffusion-CheatSheet">Github user SupaGruen</a> for the basis of this project.</p>
-			<p>Most prompts were run with 25 steps, guidance 3, and seed 1.</p>
+			<h1>FLUX.1 [pro] cheatsheet</h1>
+			<p>A collection of what <a href="https://blackforestlabs.ai/announcing-black-forest-labs/">FLUX.1 [pro]</a> generates when prompted with "Style of [artist name]" for <span id="numArtists"></span> artists. Huge thanks to <a href="https://fluxpro.art/users/clznf8wx700q98csskgsrhzc9">fluxpro.art</a> for generation resources, and <a href="https://github.com/SupaGruen/StableDiffusion-CheatSheet">Github user SupaGruen</a> for the basis of this project.</p>
+			<p>Prompts were run with 25 steps, guidance 3, and seed 1.</p>
 			<p>Updates, additions, refinement, and analysis to come.</p>
 			William Strealy - <a href="https://www.linkedin.com/in/william-strealy/">LinkedIn</a> <a href="https://github.com/AWTom/FLUX.1-pro-cheatsheet">Github</a>
 		</div>
@@ -167,15 +159,18 @@ body {
 			const fluxProArtUrlPrefix = "https://fluxpro.art/prompts/";
 
 			loadCSV("/artistNamesLinks.csv").then(artistNamesLinks => {
+				let numArtists = 0;
 				const table = document.createElement("div");
 				table.className = "table";
-				table.innerHTML = artistNamesLinks.split("\n").map((l, i) => {
+				table.innerHTML = artistNamesLinks.split("\n").map((l, i, a) => {
+					numArtists = a.length;
 					const [name, link] = l.split(",");
 					const fileName = "Styleof" + name.replaceAll(" ", "").replaceAll(".", "");
 					const imgTags = ["0", "1", "2", "3"].map(i => `<img src="https://strea.ly/cdn-cgi/image/w=128,h=128/${fileName}${i}.webp">`).join("");
 					return `<div id="${i}" class="row"><div class="row-info">Style of ${name}</div><div class="row-toolbar">Style of ${name}<span class="row-icons"><i class="copy"><a href="https://fluxpro.art/prompts/${link}" target="_blank" rel="noopener noreferrer"></i><i class="fluxproart"></i></a><i class="minimize"></i></span></div>${imgTags}</div>`
 				}).join("");
 
+				let checkedId = -1;
 				// Click on unexpanded row: expand row
 				// Click on expanded row image: expand image
 				// Click on expanded row minimize icon: minimize row
@@ -203,8 +198,13 @@ body {
 								// Expand this image
 								console.log(event.target);
 							} else if (tag === "I" && event.target.classList.contains("copy")) {
+								const prev = document.getElementById(checkedId)?.querySelector(".check");
+								if (prev !== null && prev !== undefined) {
+									prev.classList.remove("check");
+								}
 								navigator.clipboard.writeText(row.children[1].innerText);
 								event.target.classList.add("check");
+								checkedId = row.id;
 							} else if (tag === "I" && event.target.classList.contains("minimize")) {
 								row.classList.remove("row-expanded");
 							}
@@ -221,6 +221,7 @@ body {
 					}
 				}, true);
 
+				document.getElementById("numArtists").innerText = numArtists;
 				document.body.appendChild(table);
 
 				document.getElementById("loading").remove();
