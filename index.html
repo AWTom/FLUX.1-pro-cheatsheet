@@ -87,15 +87,15 @@ body {
 .row-icons > * {
 	margin-inline-start: 0.5em;
 }
-.row > img {
+.row img {
 	width: 10vw;
 	height: 10vw;
 	border-radius: 0.5vw;
 	margin: 0.5vw;
-	transition: width 0.25s ease-out, height 0.25s ease-out, margin 0.25s ease-out;
+	transition: width 0.25s ease-out, height 0.25s ease-out, margin 0.25s ease-out, background-position 0.25s ease-out, background-size 0.25s ease-out;
 	cursor: zoom-in;
 }
-.row > img.loading {
+.row img.loading {
 	cursor: wait;
 }
 .row.row-expanded {
@@ -128,8 +128,11 @@ body {
 .row.row-expanded img {
 	width: 24vw;
 	height: 24vw;
-	position: relative;
 	margin-block-start: calc(1em + 3vw);
+}
+.row.row-expanded img.img-expanded {
+	position: absolute;
+	margin-inline: auto;
 }
 		</style>
 	</head>
@@ -160,17 +163,24 @@ body {
 
 			const promptPrefix = "Style of ";
 			const fluxProArtUrlPrefix = "https://fluxpro.art/prompts/";
+			// rows of images per sprite sheet image
+			const ssd = 32;
+			// height/width of sprite images
+			const sw = 128;
 
 			loadCSV("/artistNamesLinks.csv").then(artistNamesLinks => {
 				let numArtists = 0;
+				let fileNames = [];
 				const table = document.createElement("div");
 				table.className = "table";
 				table.innerHTML = artistNamesLinks.split("\n").map((l, i, a) => {
 					numArtists = a.length;
 					const [name, link] = l.split(",");
-					const fileName = "Styleof" + name.replaceAll(" ", "").replaceAll(".", "");
-					const imgTags = ["0", "1", "2", "3"].map(i => `<img src="https://strea.ly/cdn-cgi/image/w=128,h=128/${fileName}${i}.webp">`).join("");
-					return `<div id="${i}" class="row"><div class="row-info">Style of ${name}</div><div class="row-toolbar">Style of ${name}<span class="row-icons"><i class="copy" title="Copy to clipboard"><a href="https://fluxpro.art/prompts/${link}" target="_blank" rel="noopener noreferrer" title="See original generation on fluxpro.art"></i><i class="fluxproart"></i></a><a href="https://fluxpro.art/prompts?q=${name}" target="_blank" rel="noopener noreferrer" title="Search for images generated using ${name} on fluxpro.art"><i class="search"></i></a><i class="minimize"></i></span></div>${imgTags}</div>`
+					fileNames[i] = name.replaceAll(" ", "").replaceAll(".", "");
+					//const imgTags = ["0", "1", "2", "3"].map(i => `<img src="https://strea.ly/cdn-cgi/image/w=128,h=128/${fileName}${i}.webp">`).join("");
+					const currentSpriteSheet = String(Math.floor(i / ssd)).padStart(2, "0")
+					const imgTags = [0, 1, 2, 3].map(j => `<img style="background: url('/Styleof-${currentSpriteSheet}.webp');background-position: ${j*-10}vw ${i*-10}vw;background-size: 40vw"></img>`).join("");
+					return `<div id="${i}" class="row"><div class="row-info">Style of ${name}</div><div class="row-toolbar">Style of ${name}<span class="row-icons"><i class="copy" title="Copy to clipboard"><a href="https://fluxpro.art/prompts/${link}" target="_blank" rel="noopener noreferrer" title="See original generation on fluxpro.art"></i><i class="fluxproart"></i></a><a href="https://fluxpro.art/prompts?q=${name}" target="_blank" rel="noopener noreferrer" title="Search for images generated using ${name} on fluxpro.art"><i class="search"></i></a><i class="minimize"></i></span></div><div>${imgTags}</div></div>`
 				}).join("");
 
 				let checkedId = -1;
@@ -179,7 +189,6 @@ body {
 				// Click on expanded row minimize icon: minimize row
 				// Click on expanded row fluxproart icon: link
 				table.addEventListener("click", event => {
-					// TODO make this more specific so it doesn't trigger on the blank area of the row
 					if (event.target !== table && table.contains(event.target)) {
 						const row = event.target.closest(".row");
 						const tag = event.target.tagName;
@@ -191,25 +200,31 @@ body {
 								row.classList.add("row-expanded");
 
 								// Add larger images
-								Array.from(row.children).forEach(e => {
-									if (e.tagName === "IMG" && e.getAttribute("src").includes(imgOptimizerSnippet)) {
+								Array.from(row.children[2].children).forEach((e, i) => {
+									//if (e.tagName === "IMG" && e.getAttribute("src").includes(imgOptimizerSnippet)) {
+									if (e.tagName === "IMG" /*&& not already loaded */) {
 										e.classList.add("loading");
-										e.setAttribute("src", e.getAttribute("src").replace(imgOptimizerSnippet, ""));
+										let [posX, posY] = e.style.backgroundPosition.split(" ").map(str => parseInt(str));
+										e.style.backgroundPosition = `${posX*2.4}vw ${posY*2.4}vw`;
+										e.style.backgroundSize = `${parseInt(e.style.backgroundSize)*2.4}vw`;
+										e.setAttribute("src", `/Styleof${fileNames[row.id]}${i}.webp`);
 									}
 								});
 							} else if (tag === "IMG") {
 								// Expand this image
 								console.log(event.target);
 							} else if (tag === "I" && event.target.classList.contains("copy")) {
-								const prev = document.getElementById(checkedId)?.querySelector(".check");
-								if (prev !== null && prev !== undefined) {
-									prev.classList.remove("check");
-								}
+								document.getElementById(checkedId)?.querySelector(".check")?.classList.remove("check");
 								navigator.clipboard.writeText(row.children[1].innerText);
 								event.target.classList.add("check");
 								checkedId = row.id;
 							} else if (tag === "I" && event.target.classList.contains("minimize")) {
 								row.classList.remove("row-expanded");
+								Array.from(row.children[2].children).forEach(e => {
+									let [posX, posY] = e.style.backgroundPosition.split(" ").map(str => parseInt(str));
+									e.style.backgroundPosition = `${posX/2.4}vw ${posY/2.4}vw`;
+									e.style.backgroundSize = `${parseInt(e.style.backgroundSize)/2.4}vw`;
+								});
 							}
 						}
 					}
