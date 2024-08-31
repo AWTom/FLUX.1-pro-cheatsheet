@@ -52,7 +52,8 @@ body {
 	background: linear-gradient(0deg, var(--color) 0%, var(--color) calc(var(--v) - 30%), transparent var(--v));
 	background-clip: text;
 	-webkit-text-fill-color: transparent;
-	transition: margin 0.25s ease-out, --v 0.25s ease-out;
+	visibility: hidden;
+	transition: margin 0.25s ease-out, --v 0.25s ease-out, visibility 0s 0.25s allow-discrete;
 }
 .row-icons {
 	height: 0.9em;
@@ -65,8 +66,8 @@ body {
 	height: 0.9em;
 	stroke: white;
 	display: inline-block;
-	background: linear-gradient(0deg, var(--color) 0%, var(--color) calc(var(--v) - 30%), transparent var(--v));
-	transition: --v 0.25s ease-out;
+	background: linear-gradient(0deg, var(--color) 0%, var(--color) calc(var(--w) - 30%), transparent var(--w));
+	transition: --w 0.25s ease-out;
 	cursor: pointer;
 }
 .row-icons i.copy {
@@ -87,16 +88,26 @@ body {
 .row-icons > * {
 	margin-inline-start: 0.5em;
 }
-.row img {
+.row .img-container {
 	width: 10vw;
 	height: 10vw;
 	border-radius: 0.5vw;
 	margin: 0.5vw;
+	background-size: 400%;
 	transition: width 0.25s ease-out, height 0.25s ease-out, margin 0.25s ease-out, background-position 0.25s ease-out, background-size 0.25s ease-out;
 	cursor: zoom-in;
 }
+.row img {
+	width: 100%;
+	height: 100%;
+	border-radius: 0.5vw;
+	visibility: hidden;
+}
 .row img.loading {
 	cursor: wait;
+}
+.row img.loaded {
+	visibility: visible;
 }
 .row.row-expanded {
 	cursor: auto;
@@ -107,8 +118,13 @@ body {
 }
 @property --v {
 	syntax: '<percentage>';
-	inherits: true;
+	inherits: false;
 	initial-value: 130%;
+}
+@property --w {
+	syntax: '<percentage>';
+	inherits: false;
+	initial-value: 0%;
 }
 .row.row-expanded .row-info {
 	visibility: hidden;
@@ -117,17 +133,23 @@ body {
 .row.row-expanded .row-toolbar {
 	--v: 130%;
 	margin-block-start: 2vw;
+	visibility: visible;
+	transition: margin 0.25s ease-out, --v 0.25s ease-out, visibility 0s 0s allow-discrete;
 }
 .row.row-expanded .row-icons {
+	--w: 130%;
 	visibility: visible;
 	transition: visibility 0s 0s allow-discrete;
 }
-.row.row-expanded:not(:hover) .row-icons i {
-	--v: 0%;
+.row.row-expanded .row-icons i {
+	--w: 130%;
 }
-.row.row-expanded img {
-	width: 24vw;
-	height: 24vw;
+.row.row-expanded:not(:hover) .row-icons i {
+	--w: 0%;
+}
+.row.row-expanded .img-container {
+	width: calc(24vw - 2px);
+	height: calc(24vw - 2px);
 	margin-block-start: calc(1em + 3vw);
 }
 .row.row-expanded img.img-expanded {
@@ -178,36 +200,35 @@ body {
 					fileNames[i] = name.replaceAll(" ", "").replaceAll(".", "");
 					//const imgTags = ["0", "1", "2", "3"].map(i => `<img src="https://strea.ly/cdn-cgi/image/w=128,h=128/${fileName}${i}.webp">`).join("");
 					const currentSpriteSheet = String(Math.floor(i / ssd)).padStart(2, "0")
-					const imgTags = [0, 1, 2, 3].map(j => `<img style="background: url('https://strea.ly/Styleof-${currentSpriteSheet}.webp');background-position: ${j*-10}vw ${(i%32)*-10}vw;background-size: 40vw"></img>`).join("");
-					return `<div id="${i}" class="row"><div class="row-info">Style of ${name}</div><div class="row-toolbar">Style of ${name}<span class="row-icons"><i class="copy" title="Copy to clipboard"><a href="https://fluxpro.art/prompts/${link}" target="_blank" rel="noopener noreferrer" title="See original generation on fluxpro.art"></i><i class="fluxproart"></i></a><a href="https://fluxpro.art/prompts?q=${name}" target="_blank" rel="noopener noreferrer" title="Search for images generated using ${name} on fluxpro.art"><i class="search"></i></a><i class="minimize"></i></span></div><div>${imgTags}</div></div>`
+					//const imgTags = [0, 1, 2, 3].map(j => `<img style="background: url('https://strea.ly/Styleof-${currentSpriteSheet}.webp');background-position: ${j*-10}vw ${(i%32)*-10}vw;background-size: 40vw"></img>`).join("");
+					//const imgTags = [0, 1, 2, 3].map(j => `<img style="background-image: url('https://strea.ly/Styleof-${currentSpriteSheet}.webp');background-position: calc(${j*-10}vw - ${j*0.5}px) calc(${(i%ssd)*-10}vw - ${(i%ssd)*0.5}px);"></img>`).join("");
+					const imgTags = [0, 1, 2, 3].map(j => `<div class="img-container" style="background-image: url('https://strea.ly/Styleof-${currentSpriteSheet}.webp');background-position: -${j}00% -${i%ssd}00%;"><img></img></div>`).join("");
+					return `<div id="${i}" class="row"><div class="row-info">Style of ${name}</div><div class="row-toolbar">Style of ${name}<span class="row-icons"><i class="copy" title="Copy to clipboard"><a href="https://fluxpro.art/prompts/${link}" target="_blank" rel="noopener noreferrer" title="See original generation on fluxpro.art"></i><i class="fluxproart"></i></a><a href="https://fluxpro.art/prompts?q=${name}" target="_blank" rel="noopener noreferrer" title="Search for images generated using ${name} on fluxpro.art"><i class="search"></i></a><i class="minimize"></i></span></div>${imgTags}</div>`
 				}).join("");
 
 				let checkedId = -1;
 				// Click on unexpanded row: expand row
 				// Click on expanded row image: expand image
 				// Click on expanded row minimize icon: minimize row
-				// Click on expanded row fluxproart icon: link
 				table.addEventListener("click", event => {
 					if (event.target !== table && table.contains(event.target)) {
 						const row = event.target.closest(".row");
 						const tag = event.target.tagName;
-						const imgOptimizerSnippet = "cdn-cgi/image/w=128,h=128/";
 
 						if (row) {
-							if (!row.classList.contains("row-expanded") && tag === "IMG") {
+							if (!row.classList.contains("row-expanded") && (event.target.classList.contains("img-container") || tag === "IMG")) {
 								// Maximize row
 								row.classList.add("row-expanded");
 
-								// Add larger images
-								Array.from(row.children[2].children).forEach((e, i) => {
-									//if (e.tagName === "IMG" && e.getAttribute("src").includes(imgOptimizerSnippet)) {
-									if (e.tagName === "IMG" /*&& not already loaded */) {
-										e.classList.add("loading");
-										let [posX, posY] = e.style.backgroundPosition.split(" ").map(str => parseInt(str));
-										e.style.backgroundPosition = `${posX*2.4}vw ${posY*2.4}vw`;
-										e.style.backgroundSize = `${parseInt(e.style.backgroundSize)*2.4}vw`;
-										e.setAttribute("src", `https://strea.ly/Styleof${fileNames[row.id]}${i}.webp`);
+								// Load larger images
+								Array.from(row.children).splice(-4).forEach((e, i) => {
+									const img = e.children[0];
+									if (img.classList.contains("loading") || img.classList.contains("loaded")) {
+										return;
 									}
+									e.classList.add("loading");
+									img.classList.add("loading");
+									img.setAttribute("src", `https://strea.ly/Styleof${fileNames[row.id]}${i}.webp`);
 								});
 							} else if (tag === "IMG") {
 								// Expand this image
@@ -219,11 +240,6 @@ body {
 								checkedId = row.id;
 							} else if (tag === "I" && event.target.classList.contains("minimize")) {
 								row.classList.remove("row-expanded");
-								Array.from(row.children[2].children).forEach(e => {
-									let [posX, posY] = e.style.backgroundPosition.split(" ").map(str => parseInt(str));
-									e.style.backgroundPosition = `${posX/2.4}vw ${posY/2.4}vw`;
-									e.style.backgroundSize = `${parseInt(e.style.backgroundSize)/2.4}vw`;
-								});
 							}
 						}
 					}
@@ -233,8 +249,12 @@ body {
 				// TODO remove loading if loading failed
 				table.addEventListener("load", event => {
 					const e = event.target;
-					if (e.tagName === "IMG" && e.classList.contains("loading")) {
+					if (e.tagName === "IMG") {
+						const imgContainer = e.parentElement;
 						e.classList.remove("loading");
+						e.classList.add("loaded");
+						imgContainer.classList.remove("loading");
+						imgContainer.classList.add("loaded");
 					}
 				}, true);
 
