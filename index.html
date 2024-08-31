@@ -97,14 +97,14 @@ body {
 	transition: width 0.25s ease-out, height 0.25s ease-out, margin 0.25s ease-out, background-position 0.25s ease-out, background-size 0.25s ease-out;
 	cursor: zoom-in;
 }
+.row .img-container.loading {
+	cursor: wait;
+}
 .row img {
 	width: 100%;
 	height: 100%;
 	border-radius: 0.5vw;
 	visibility: hidden;
-}
-.row img.loading {
-	cursor: wait;
 }
 .row img.loaded {
 	visibility: visible;
@@ -148,8 +148,8 @@ body {
 	--w: 0%;
 }
 .row.row-expanded .img-container {
-	width: calc(24vw - 2px);
-	height: calc(24vw - 2px);
+	width: 24vw;
+	height: 24vw;
 	margin-block-start: calc(1em + 3vw);
 }
 .row.row-expanded img.img-expanded {
@@ -200,8 +200,6 @@ body {
 					fileNames[i] = name.replaceAll(" ", "").replaceAll(".", "");
 					//const imgTags = ["0", "1", "2", "3"].map(i => `<img src="https://strea.ly/cdn-cgi/image/w=128,h=128/${fileName}${i}.webp">`).join("");
 					const currentSpriteSheet = String(Math.floor(i / ssd)).padStart(2, "0")
-					//const imgTags = [0, 1, 2, 3].map(j => `<img style="background: url('https://strea.ly/Styleof-${currentSpriteSheet}.webp');background-position: ${j*-10}vw ${(i%32)*-10}vw;background-size: 40vw"></img>`).join("");
-					//const imgTags = [0, 1, 2, 3].map(j => `<img style="background-image: url('https://strea.ly/Styleof-${currentSpriteSheet}.webp');background-position: calc(${j*-10}vw - ${j*0.5}px) calc(${(i%ssd)*-10}vw - ${(i%ssd)*0.5}px);"></img>`).join("");
 					const imgTags = [0, 1, 2, 3].map(j => `<div class="img-container" style="background-image: url('https://strea.ly/Styleof-${currentSpriteSheet}.webp');background-position: -${j}00% -${i%ssd}00%;"><img></img></div>`).join("");
 					return `<div id="${i}" class="row"><div class="row-info">Style of ${name}</div><div class="row-toolbar">Style of ${name}<span class="row-icons"><i class="copy" title="Copy to clipboard"><a href="https://fluxpro.art/prompts/${link}" target="_blank" rel="noopener noreferrer" title="See original generation on fluxpro.art"></i><i class="fluxproart"></i></a><a href="https://fluxpro.art/prompts?q=${name}" target="_blank" rel="noopener noreferrer" title="Search for images generated using ${name} on fluxpro.art"><i class="search"></i></a><i class="minimize"></i></span></div>${imgTags}</div>`
 				}).join("");
@@ -223,11 +221,10 @@ body {
 								// Load larger images
 								Array.from(row.children).splice(-4).forEach((e, i) => {
 									const img = e.children[0];
-									if (img.classList.contains("loading") || img.classList.contains("loaded")) {
+									if (e.classList.contains("loading") || img.classList.contains("loaded")) {
 										return;
 									}
 									e.classList.add("loading");
-									img.classList.add("loading");
 									img.setAttribute("src", `https://strea.ly/Styleof${fileNames[row.id]}${i}.webp`);
 								});
 							} else if (tag === "IMG") {
@@ -251,10 +248,8 @@ body {
 					const e = event.target;
 					if (e.tagName === "IMG") {
 						const imgContainer = e.parentElement;
-						e.classList.remove("loading");
-						e.classList.add("loaded");
 						imgContainer.classList.remove("loading");
-						imgContainer.classList.add("loaded");
+						e.classList.add("loaded");
 					}
 				}, true);
 
