@@ -30,7 +30,7 @@ loadData("/artistData.json").then(artistNamesLinks => {
 		fileNames[i] = name.replaceAll(" ", "").replaceAll(".", "");
 		//const imgTags = ["0", "1", "2", "3"].map(i => `<img src="https://strea.ly/cdn-cgi/image/w=128,h=128/${fileName}${i}.webp">`).join("");
 		const currentSpriteSheet = String(Math.floor(i / ssd)).padStart(2, "0")
-		const imgTags = [0, 1, 2, 3].map(j => `<div class="img-container" style="background-image: url('https://strea.ly/Styleof-${currentSpriteSheet}.webp');background-position: -${j}00% -${i%ssd}00%;"><img></img></div>`).join("");
+		const imgTags = [0, 1, 2, 3].map(j => `<div class="img-container" style="background-image: url('https://strea.ly/Styleof-${currentSpriteSheet}.webp');background-position: ${j/3*100}% ${i%ssd/(ssd-1)*100}%;"><img></img></div>`).join("");
 		return `<div id="${i}" class="row"><div class="row-info">Style of ${name}</div><div class="row-toolbar">Style of ${name}<span class="row-icons"><i class="copy" title="Copy to clipboard"><a href="https://fluxpro.art/prompts/${link}" target="_blank" rel="noopener noreferrer" title="See original generation on fluxpro.art"></i><i class="fluxproart"></i></a><a href="https://fluxpro.art/prompts?q=${name}" target="_blank" rel="noopener noreferrer" title="Search for images generated using ${name} on fluxpro.art"><i class="search"></i></a><i class="minimize"></i></span></div>${imgTags}</div>`
 	}).join("");
 
